@@ -1,0 +1,79 @@
+body{
+    background-image: url("../images/background2.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+.div_head{
+    position: relative;
+    width: 100%;
+}
+.img_tytle{
+    position: absolute;
+    width: 80%;
+    margin-left: 10%;
+    height: 300px;
+    border-radius: 30%;
+}
+
+.choose_num_of_opp{
+    direction: rtl;
+    font-style:normal; 
+    color: white;
+    font-family: monospace,serif;
+    position: absolute;
+    font-size: 50px;
+    font-weight: bold;
+    margin-top: 10%;
+    margin-left: 70%;
+}
+.input,.label{
+    direction: rtl;
+    color: white;
+    font-family: monospace,serif; 
+    position: absolute;
+    font-size: 50px;
+    font-weight: bold;
+    margin-top: 10%;
+}
+.label{
+    color: white;
+    font-family: monospace,serif; 
+    /* font-size: 30px; */
+}
+#input1,#label1{
+    margin-left: 60%;
+}
+#input2{
+    margin-left: 40%;
+}
+#input3{
+    margin-left: 20%;
+}
+#label1{
+    margin-left: 57%;
+}
+#label2{
+    margin-left: 37%;
+}
+#label3{
+    margin-left: 17%;
+}
+.button{
+    color: white;
+    font-family: monospace,serif; 
+    width: 400px;
+    height: 300px;
+    font-size: 50px;
+    border-radius: 10px;
+    margin-top: 25%;
+    margin-left: 40%;
+    background-color: peru;
+}
+.btn_instruction{
+    position: absolute;
+    width: 15%;
+
+}
+
+

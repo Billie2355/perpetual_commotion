@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="style/login.css" rel="stylesheet">
+  <script src="scripts/login.js"></script>
+</head>
+
+<body>
+  <header>
+    <h2 id="head">Epic Card Frenzy</h2>
+  </header>
+  <div class="signup">
+    <button class="btn block-cube block-cube-hover" onclick="showModel1()" id="signupbtn" style="margin-top: 100px;">
+      <div class="bg-top"></div>
+      <div class="bg-inner"></div>
+      <div class="bg-right"></div>
+      <div class="bg-inner"></div>
+      <div class="bg"></div>
+      <div class="bg-inner"></div>
+      <span class="text">Sign Up</span>
+    </button>
+    <button class="btn block-cube block-cube-hover" onclick="showModel2()" id="loginbtn" style="margin-top: 50px;">
+      <div class="bg-top"></div>
+      <div class="bg-inner"></div>
+      <div class="bg-right"></div>
+      <div class="bg-inner"></div>
+      <div class="bg"></div>
+      <div class="bg-inner"></div>
+      <span class="text">Sign In</span>
+    </button>
+    <!-- <button onclick="showModel1()" style="width: 800px" class="signup2" id="signupbtn">Sign Up</button>
+    <button onclick="showModel2()" style="width: 800px;" class="login" id="loginbtn">Log In</button> -->
+  </div>
+
+  <div id="id01" class="modal">
+    <span onclick="closeModel1()" class="close" title="Close Modal">&times;</span>
+    <form class="form" onsubmit="register(event)" method="POST">
+      <div class="control">
+        <h1>Sign Up</h1>
+      </div>
+      <div class="control block-cube block-input">
+        <input id="username" name="username" type="text" placeholder="Username" required />
+        <div class="bg-top"></div>
+        <div class="bg-inner"></div>
+        <div class="bg-right"></div>
+        <div class="bg-inner"></div>
+        <div class="bg"></div>
+        <div class="bg-inner"></div>
+      </div>
+      <div class="control block-cube block-input">
+        <input id="age" name="Age" type="text" placeholder="Age" required />
+        <div class="bg-top"></div>
+        <div class="bg-inner"></div>
+        <div class="bg-right"></div>
+        <div class="bg-inner"></div>
+        <div class="bg"></div>
+        <div class="bg-inner"></div>
+      </div>
+      <div class="control block-cube block-input">
+        <input id="email" name="email" type="text" placeholder="Email" required />
+        <div class="bg-top"></div>
+        <div class="bg-inner"></div>
+        <div class="bg-right"></div>
+        <div class="bg-inner"></div>
+        <div class="bg"></div>
+        <div class="bg-inner"></div>
+      </div>
+      <div class="control block-cube block-input">
+        <input id="password" name="password" type="password" placeholder="Password" required />
+        <div class="bg-top"></div>
+        <div class="bg-inner"></div>
+        <div class="bg-right"></div>
+        <div class="bg-inner"></div>
+        <div class="bg"></div>
+        <div class="bg-inner"></div>
+      </div>
+      <button class="btn block-cube block-cube-hover" type="submit" onclick="register()">
+        <div class="bg-top"></div>
+        <div class="bg-inner"></div>
+        <div class="bg-right"></div>
+        <div class="bg-inner"></div>
+        <div class="bg"></div>
+        <div class="bg-inner"></div>
+        <span class="text">Sign Up</span>
+      </button>
+      <div class="credits">
+        <a href="https://codepen.io/marko-zub/" target="_blank">view more Hadasa&Billy</a>
+      </div>
+    </form>
+  </div>
+
+
+  <div id="id02" class="modal">
+    <span onclick="closeModel2()" class="close" title="Close Modal">&times;</span>
+    <form class="form" onsubmit="login(event)" method="POST">
+      <div class="control">
+        <h1>Sign In</h1>
+      </div>
+      <div class="control block-cube block-input">
+        <input id="email2" name="email" type="text" placeholder="Email" required />
+        <div class="bg-top"></div>
+        <div class="bg-inner"></div>
+        <div class="bg-right"></div>
+        <div class="bg-inner"></div>
+        <div class="bg"></div>
+        <div class="bg-inner"></div>
+      </div>
+      <div class="control block-cube block-input">
+        <input id="password2" name="password" type="password" placeholder="Password" required />
+        <div class="bg-top"></div>
+        <div class="bg-inner"></div>
+        <div class="bg-right"></div>
+        <div class="bg-inner"></div>
+        <div class="bg"></div>
+        <div class="bg-inner"></div>
+      </div>
+      <button class="btn block-cube block-cube-hover" type="submit" onclick="login(event)">
+        <div class="bg-top"></div>
+        <div class="bg-inner"></div>
+        <div class="bg-right"></div>
+        <div class="bg-inner"></div>
+        <div class="bg"></div>
+        <div class="bg-inner"></div>
+        <span class="text">Sign In</span>
+      </button>
+      <div class="credits">
+        <a href="https://codepen.io/marko-zub/" target="_blank">view more Hadasa&Billy</a>
+      </div>
+    </form>
+  </div>
+
+
+
+</body>
+
+</html>
