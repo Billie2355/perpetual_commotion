@@ -1,11 +1,15 @@
 numOfOpponents = 3
-
+playersNames = []
 allCards = []
+piles = []
 playMakers = []
 feeders = []
 frontFive = []
+frontFiveMissingIndexes = []
 cardsIndex = []
+roundScore = []
 score = []
+const colors = ['blue', 'red', 'green', 'yellow'];
 
 function randCards(numOfOpponents) {
     for (let i = 0; i <= numOfOpponents; i++) {
@@ -65,15 +69,59 @@ function moveTopCardToBottom(i) {
     cardsIndex[i] = -1
 }
 
+function popCardFromFrontFive(i, cardIndex) {
+    if (frontFive[i][cardIndex] )
+        frontFive[i][cardIndex] = null
+}
+
+function user_thirteen_click() {
+    const cards_board = document.getElementById('user_board')// .childElementCount;
+    const cards = Array.from(cards_board.children);
+    for (let i = 0; i < 5; i++) {
+        if (cards[i].getElementsByTagName('div')[1].childElementCount == 0) {
+            const card_to_add = document.createElement("img");
+            card_to_add.className = "img_front"
+            card_to_add.src = `images/${colors[cards13[1][cards13[1].length - 1].color]}/${cards13[1][cards13[1].length - 1].number}.jpg`;
+            card_to_add.number = cards13[1][cards13[1].length - 1].number;
+            card_to_add.color = colors[cards13[1][cards13[1].length - 1].color];
+            card_to_add.id = `fromFive${i}`;
+            card_to_add.draggable = true;
+            frontFive[1][i].number = card_to_add.number;
+            frontFive[1][i].color = cards13[1][cards13[1].length - 1].color;
+            card_to_add.setAttribute("ondragstart", "dragStart(event)");
+            cards[i].getElementsByTagName('div')[1].appendChild(card_to_add);
+            cards13[1].splice(cards13[1].length - 1, 1);
+            let num_of_close_13 = document.getElementById("user_thirteen").getElementsByTagName("p")[0];
+            num_of_close_13.textContent = parseInt(num_of_close_13.textContent) - 1
+            if (cards13[1].length === 0) {
+                for (let i = 1; i <= numOfOpponents+ 1; i++) {
+                    flag[i] = true;
+                }
+                roundWin(1)
+                is_win = true;
+            }
+            break;
+        }
+    }
+}
+
+function feedFrontFive(i, cardIndex) {
+    if (feeders[i].length > 0) {
+        card = feeders[i].pop()
+        frontFive[i][cardIndex] = card
+        frontFiveMissingIndexes.push(cardIndex)
+    }
+}
+
 function get_board() {
+    console.log("get_board")
     let players = document.getElementById("players");
-    players.className = `players${opp_num}`
+    players.className = `players${numOfOpponents}`
     arrPlayers_board = Array.from(document.querySelector("#players").children);
     // ********** יצירת השחקנים מולם משחק המשתמש **********   
-    for (let i = 2; i <= opp_num + 1; i++) {
+    for (let i = 2; i <= numOfOpponents+ 1; i++) {
         playersNames[i] = `שחקן מחשב ${i - 1}`
-        is_move_first_card[i] = false;
-        score_this_round[i] = 0;
+        roundScore[i] = 0;
         const opp_board = document.createElement("div");
         opp_board.id = "opp_board" + i;
         opp_board.className = "opp_board";
@@ -84,9 +132,9 @@ function get_board() {
         for (let j = 0; j < 5; j++) {
             const img_front = document.createElement("img");
             img_front.alt = "card";
-            img_front.src = `images/${colors[cards5[i][j].color]}/${cards5[i][j].number}.jpg`;
-            img_front.number = cards5[i][j].number;
-            img_front.color = colors[cards5[i][j].color];
+            img_front.src = `images/${colors[frontFive[i][j].color]}/${frontFive[i][j].number}.jpg`;
+            img_front.number = frontFive[i][j].number;
+            img_front.color = colors[frontFive[i][j].color];
             img_front.draggable = false;
             const front = document.createElement("div");
             front.className = "card-front";
@@ -164,9 +212,9 @@ function get_board() {
         const opponent = document.createElement("div");
         opponent.id = `opp${i}`;
         opponent.className = "opponent";
-        if(opp_num == 3 && i == 2)
+        if(numOfOpponents== 3 && i == 2)
             opponent.style.transform = 'rotate(-25deg)';
-        if(opp_num == 3 && i == 4)
+        if(numOfOpponents== 3 && i == 4)
             opponent.style.transform = 'rotate(25deg)';
 
         opponent.appendChild(opp_board);
@@ -222,8 +270,7 @@ function get_board() {
     // ********** יצירת לוח הקלפים של המשתמש **********   
     const user_board = document.createElement("div");
     playersNames[1] = "אני";
-    is_move_first_card[1] = false;
-    score_this_round[1] = 0
+    roundScore[1] = 0
     user_board.id = "user_board";
     user_board.className = "user_board";
     for (let j = 0; j < 5; j++) {
@@ -239,11 +286,11 @@ function get_board() {
         const img_front = document.createElement("img");
         img_front.id = `from-five${j}`;
         img_front.draggable = true;
-        img_front.number = cards5[1][j].number;
-        img_front.color = colors[cards5[1][j].color];
+        img_front.number = frontFive[1][j].number;
+        img_front.color = colors[frontFive[1][j].color];
         img_front.className = "img_front";
         img_front.alt = "card";
-        img_front.src = `images/${colors[cards5[1][j].color]}/${cards5[1][j].number}.jpg`;
+        img_front.src = `images/${colors[frontFive[1][j].color]}/${frontFive[1][j].number}.jpg`;
         // Add dragstart event listener 
         img_front.setAttribute("ondragstart", "dragStart(event)");
         img_front.setAttribute("ondragend", "dragEnd(event)");
@@ -317,12 +364,13 @@ function get_board() {
     const user_div = document.getElementById("user");
     user_div.appendChild(user_board);
     user_div.appendChild(user_cards);
+
 }
 
-function round() {
+function round(numOfOpponents) {
+    randCards()
     get_board()
 }
-
 
 function game() {
     round()
