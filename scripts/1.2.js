@@ -167,6 +167,28 @@ function click_user_cards3() {
 }
 
 function clickPlayMakers() {
+    if (cardsIndex[1] === playMakers[1].length - 1 && back_img.hidden === true)
+        return;
+
+    cardsToFlip = 3
+    if (playMakers[1].length - (cardsIndex[1]+1) < cardsToFlip) 
+        cardsToFlip = playMakers[1].length - (cardsIndex[1]+1)
+
+    for (let i = 1; i <= cardsToFlip; i++) {
+        const card = playMakers[1][cardsIndex[1] + i];
+        uaerOpenPlayMakersPile = document.getElementById("user_open_game_cards");
+        uaerOpenPlayMakersPile.appendChild(card);
+        card.setAttribute("ondragstart", "dragStart(event)");
+        card.setAttribute("onclick", "FlipPlayMakersBack()")
+    }
+    cardsIndex[1] += cardsToFlip
+    if (cardsIndex[1] === playMakers[1].length - 1) {
+        back_img = document.getElementById("user_close_game_cards").querySelector("#card-back1").getElementsByTagName("img")[0];
+        back_img.hidden = true;
+    }
+
+     
+    
     
 }
 
@@ -175,7 +197,7 @@ function flipPlayMakers(i) {
     if (playMakers[i].length - (cardsIndex[i]+1) < cardsToFlip) 
         cardsToFlip = playMakers[i].length - (cardsIndex[i]+1)
          
-    cardsIndex[i] += cardsToFlip
+    cardsIndex[i] += cardsToFlip 
 }
 
 function placePlayMakers(i) {
