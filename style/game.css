@@ -154,6 +154,12 @@ p {
     transform-style: preserve-3d;
 }
 
+.hold_user_front_five {
+    display: grid;
+    grid-template-columns: repeat(5, 20%);
+    grid-column: span 5;
+}
+
 .user_thirteen {
     position: relative;
     font-size: 30px;
