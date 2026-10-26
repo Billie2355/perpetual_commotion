@@ -2,6 +2,7 @@ numOfOpponents = 3
 playersNames = []
 allCards = []
 piles = []
+emptyPiles = []
 playMakers = []
 feeders = []
 frontFive = []
@@ -52,10 +53,27 @@ function initializeCards(i) {
     cardsIndex[i] = -1
 }
 
+function allowDrop(event) {
+    event.preventDefault();
+    if (source.number == 1)
+        for (let i = 0; i < emptyPiles.length; i++) {
+            piles[emptyPiles[i]].style.backgroundColor = "rgb(200, 200, 200)";
+        }
+}
+
 function unHighlightAllPiles() {
-    for (let i = 0; i < empty_piles.length; i++) {
-        piles[empty_piles[i]].style.background = "none";
+    for (let i = 0; i < emptyPiles.length; i++) {
+        piles[emptyPiles[i]].style.background = "none";
     }
+}
+
+function dragStart(event) {
+    event.dataTransfer.setData("sourceId", event.target.id);
+    source = document.getElementById(event.target.id)
+}
+
+function dragEnd(event) {
+    unHighlightAllPiles();
 }
 
 function dropCard(event) {
@@ -72,7 +90,7 @@ function dropCard(event) {
                 roundScore[1]++;
                 unHighlightAllPiles();
                 pile_number = parseInt(event.target.id.replace("pile", ""));
-                empty_piles.splice(empty_piles.indexOf(pile_number), 1);
+                emptyPiles.splice(emptyPiles.indexOf(pile_number), 1);
                 draggedImg.draggable = false;
                 draggedImg.style.position = "absolute";
                 break;
@@ -147,8 +165,6 @@ function click_user_cards3() {
         game_img_front.alt = "card";
         game_img_front.src = `images/${colors[cards3[1][index_cards3[1] - i].color]}/${cards3[1][index_cards3[1] - i].number}.jpg`;
         user_open_game_cards.appendChild(game_img_front);
-        game_img_front.setAttribute("ondragstart", "dragStart(event)");
-        game_img_front.setAttribute("onclick", "click_user_open_cards()")
     }
     flip3cards(images, countCards)
     let close_cards = document.querySelector("#user_close_game_cards")
@@ -167,37 +183,83 @@ function click_user_cards3() {
 }
 
 function clickPlayMakers() {
-    if (cardsIndex[1] === playMakers[1].length - 1 && back_img.hidden === true)
+    if (cardsIndex[1] === playMakers[1].length - 1 && back_img.hidden === true) {
         return;
+    }
 
     cardsToFlip = 3
-    if (playMakers[1].length - (cardsIndex[1]+1) < cardsToFlip) 
+    if (playMakers[1].length - (cardsIndex[1]+1) < cardsToFlip)
         cardsToFlip = playMakers[1].length - (cardsIndex[1]+1)
+
+    const flippedCards = [];
+    userOpenPlayMakersPile = document.getElementById("user_open_game_cards");
 
     for (let i = 1; i <= cardsToFlip; i++) {
         const card = playMakers[1][cardsIndex[1] + i];
-        uaerOpenPlayMakersPile = document.getElementById("user_open_game_cards");
-        uaerOpenPlayMakersPile.appendChild(card);
+        card.draggable = true;
+        userOpenPlayMakersPile.appendChild(card);
         card.setAttribute("ondragstart", "dragStart(event)");
-        card.setAttribute("onclick", "FlipPlayMakersBack()")
+        card.setAttribute("ondragend", "dragEnd(event)");
+        flippedCards.push(card);
     }
+    flipPlayMakersAnimation(flippedCards);
     cardsIndex[1] += cardsToFlip
     if (cardsIndex[1] === playMakers[1].length - 1) {
         back_img = document.getElementById("user_close_game_cards").querySelector("#card-back1").getElementsByTagName("img")[0];
+        userOpenPlayMakersPile.lastChild.setAttribute("onclick", "recyclePlayMakers()")
         back_img.hidden = true;
     }
-
-     
-    
-    
 }
 
-function flipPlayMakers(i) {
-    cardsToFlip = 3
-    if (playMakers[i].length - (cardsIndex[i]+1) < cardsToFlip) 
-        cardsToFlip = playMakers[i].length - (cardsIndex[i]+1)
-         
-    cardsIndex[i] += cardsToFlip 
+// אנימציה של דפדוף עד 3 קלפים מהערימה הסגורה לערימה הפתוחה
+function flipPlayMakersAnimation(flippedCards) {
+    const closePileImg = document.getElementById("user_close_game_cards").querySelector("#card-back1").getElementsByTagName("img")[0];
+    const openPile = document.getElementById("user_open_game_cards");
+    const startRect = closePileImg.getBoundingClientRect();
+    const endRect = openPile.getBoundingClientRect();
+    const deltaX = (endRect.left + endRect.width / 2) - (startRect.left + startRect.width / 2);
+    const deltaY = (endRect.top + endRect.height / 2) - (startRect.top + startRect.height / 2);
+
+    flippedCards.forEach((card, i) => {
+        card.style.visibility = "hidden";
+
+        const wrapper = document.createElement("div");
+        wrapper.style.cssText = `position:fixed; left:${startRect.left}px; top:${startRect.top}px; width:${startRect.width}px; height:${startRect.height}px; z-index:${1000 + i}; perspective:1000px; pointer-events:none;`;
+
+        const flipper = document.createElement("div");
+        flipper.style.cssText = `position:relative; width:100%; height:100%; transform-style:preserve-3d;`;
+
+        const back = document.createElement("img");
+        back.src = closePileImg.src;
+        back.style.cssText = `position:absolute; top:0; left:0; bottom:auto; width:100%; height:100%; backface-visibility:hidden; border-radius:3px; transform:none;`;
+
+        const front = document.createElement("img");
+        front.src = card.src;
+        front.style.cssText = `position:absolute; top:0; left:0; bottom:auto; width:100%; height:100%; backface-visibility:hidden; border-radius:3px; transform:rotateY(180deg);`;
+
+        flipper.appendChild(back);
+        flipper.appendChild(front);
+        wrapper.appendChild(flipper);
+        document.body.appendChild(wrapper);
+
+        gsap.timeline({
+            delay: i * 0.05,
+            onComplete: () => {
+                wrapper.remove();
+                card.style.visibility = "visible";
+            }
+        })
+            .to(wrapper, { x: deltaX, y: deltaY, duration: 0.22, ease: "power1.inOut" }, 0)
+            .to(flipper, { rotateY: 180, duration: 0.22, ease: "power1.inOut" }, 0);
+    });
+}
+
+function recyclePlayMakers() {
+    if (back_img.hidden === false)
+        return;
+    document.getElementById("user_open_game_cards").innerHTML = "";
+    moveTopCardToBottom(1);
+    back_img.hidden = false;
 }
 
 function placePlayMakers(i) {
@@ -402,7 +464,9 @@ function get_board() {
             rot = 'rotate(' + -rot + 'deg)';
         pile.style.transform = rot;
         board.appendChild(pile);
+        emptyPiles.push(i);
     }
+    piles = Array.from(board.children); 
 
 
     // ********** יצירת לוח הקלפים של המשתמש **********   
@@ -431,13 +495,14 @@ function get_board() {
         img_front.draggable = true;
         img_front.alt = "card";
         // Add dragstart event listener
-        img_front.setAttribute("ondragstart", "dragStart(event)");
-        img_front.setAttribute("ondragend", "dragEnd(event)");
+        
 
         const front = document.createElement("div");
         front.className = "card-front";
         front.id = "card-front1"
         front.appendChild(img_front);
+        img_front.setAttribute("ondragstart", "dragStart(event)");
+        img_front.setAttribute("ondragend", "dragEnd(event)");
 
 
         const user_five_cards = document.createElement("div");
@@ -489,8 +554,6 @@ function get_board() {
     game_back.className = "card-back";
     game_back.appendChild(game_img_back);
     game_img_back.setAttribute("onclick", "clickPlayMakers()");
-    game_img_back.setAttribute("ondragstart", "dragStart(event)");
-
 
     const user_close_game_cards = document.createElement("div");
     user_close_game_cards.id = "user_close_game_cards";
