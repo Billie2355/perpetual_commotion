@@ -10,6 +10,7 @@ frontFiveMissingIndexes = []
 cardsIndex = []
 roundScore = []
 score = []
+source = null
 const colors = ['', 'blue', 'red', 'green', 'yellow'];
 
 function randCards(numOfOpponents) {
@@ -68,8 +69,10 @@ function unHighlightAllPiles() {
 }
 
 function dragStart(event) {
-    event.dataTransfer.setData("sourceId", event.target.id);
-    source = document.getElementById(event.target.id)
+    if (event.target.id.startsWith("from-five")) {
+        console.log("dragStart: from-five card:", event.target.id);
+    }
+    source = event.target;
 }
 
 function dragEnd(event) {
@@ -77,8 +80,9 @@ function dragEnd(event) {
 }
 
 function dropCard(event) {
-    const sourceId = event.dataTransfer.getData("sourceId");
-    const draggedImg = document.getElementById(sourceId);
+    const draggedImg = source;
+    sourceId = draggedImg.id;
+    let dropped = false;
     let n;
     switch (draggedImg.number) {
         case 1:
@@ -93,8 +97,9 @@ function dropCard(event) {
                 emptyPiles.splice(emptyPiles.indexOf(pile_number), 1);
                 draggedImg.draggable = false;
                 draggedImg.style.position = "absolute";
-                break;
+                dropped = true;
             }
+            break;
         case 2:
             if (draggedImg.number == event.target.parentElement.number + 1) {
                 draggedImg.style.position = "absolute";
@@ -105,6 +110,7 @@ function dropCard(event) {
                 event.target.parentElement.appendChild(draggedImg);
                 roundScore[1]++;
                 draggedImg.draggable = false;
+                dropped = true;
             }
             break;
         case 13:
@@ -116,6 +122,7 @@ function dropCard(event) {
                 event.target.parentElement.appendChild(draggedImg);
                 roundScore[1]++;
                 draggedImg.draggable = false;
+                dropped = true;
                 // for (let i = 0; i < piles.length; i++)
                 //     if (piles[i].number === 13)
                 //         explode_finish_pile(i)
@@ -131,56 +138,65 @@ function dropCard(event) {
                 event.target.parentElement.appendChild(draggedImg);
                 roundScore[1]++;
                 draggedImg.draggable = false;
+                dropped = true;
             }
+    }
+
+    if (dropped) {
+        if (sourceId.startsWith("from-five")) {
+            const cardIndex = parseInt(sourceId.replace("from-five", ""));
+            frontFiveMissingIndexes.push(cardIndex);
+            console.log("Card from front five dropped. Card index:", cardIndex);
+        }
     }
 }
 
-function click_user_cards3() {
-    let back_img = document.getElementById("user_close_game_cards").querySelector("#card-back1").getElementsByTagName("img")[0];
-    index_cards3[1] += 3;
-    if (is_move_first_card[1]) {
-        is_move_first_card[1] = false;
-        index_cards3[1] = 3;
-    }
-    if (index_cards3[1] > cards3[1].length - 1)
-        index_cards3[1] = cards3[1].length - 1;
-    if (index_cards3[1] === 0 && back_img.hidden === true)
-        return;
-    let images = {};
-    let countCards = 0;
-    for (let i = 2; i >= 0; i--) {
-        if (index_cards3[1] === 0)
-            i = 0;
-        else
-            if (index_cards3[1] === 1)
-                i = 1;
-        countCards++;
-        images[i] = `images/${colors[cards3[1][index_cards3[1] - i].color]}/${cards3[1][index_cards3[1] - i].number}.jpg`
-        const game_img_front = document.createElement("img");
-        game_img_front.draggable = true;
-        game_img_front.className = "img_front";
-        game_img_front.id = "img_user_card3" + cards3[1][index_cards3[1] - i].number + "/" + colors[cards3[1][index_cards3[1] - i].color];
-        game_img_front.number = cards3[1][index_cards3[1] - i].number;
-        game_img_front.color = colors[cards3[1][index_cards3[1] - i].color];
-        game_img_front.alt = "card";
-        game_img_front.src = `images/${colors[cards3[1][index_cards3[1] - i].color]}/${cards3[1][index_cards3[1] - i].number}.jpg`;
-        user_open_game_cards.appendChild(game_img_front);
-    }
-    flip3cards(images, countCards)
-    let close_cards = document.querySelector("#user_close_game_cards")
-    let arrFlip = Array.from(close_cards.children)
-    for (let index = 1; index < arrFlip.length; index++) {
-        arrFlip[index].remove();
-    }
-    if (index_cards3[1] === cards3[1].length - 1) {
-        back_img.hidden = true
-        index_cards3[1] = 0;
-        let temp = cards3[1][0];
-        cards3[1].splice(0, 1);
-        cards3[1].push(temp);
-        is_move_first_card[1] = true;
-    }
-}
+// function click_user_cards3() {
+//     let back_img = document.getElementById("user_close_game_cards").querySelector("#card-back1").getElementsByTagName("img")[0];
+//     index_cards3[1] += 3;
+//     if (is_move_first_card[1]) {
+//         is_move_first_card[1] = false;
+//         index_cards3[1] = 3;
+//     }
+//     if (index_cards3[1] > cards3[1].length - 1)
+//         index_cards3[1] = cards3[1].length - 1;
+//     if (index_cards3[1] === 0 && back_img.hidden === true)
+//         return;
+//     let images = {};
+//     let countCards = 0;
+//     for (let i = 2; i >= 0; i--) {
+//         if (index_cards3[1] === 0)
+//             i = 0;
+//         else
+//             if (index_cards3[1] === 1)
+//                 i = 1;
+//         countCards++;
+//         images[i] = `images/${colors[cards3[1][index_cards3[1] - i].color]}/${cards3[1][index_cards3[1] - i].number}.jpg`
+//         const game_img_front = document.createElement("img");
+//         game_img_front.draggable = true;
+//         game_img_front.className = "img_front";
+//         game_img_front.id = "img_user_card3" + cards3[1][index_cards3[1] - i].number + "/" + colors[cards3[1][index_cards3[1] - i].color];
+//         game_img_front.number = cards3[1][index_cards3[1] - i].number;
+//         game_img_front.color = colors[cards3[1][index_cards3[1] - i].color];
+//         game_img_front.alt = "card";
+//         game_img_front.src = `images/${colors[cards3[1][index_cards3[1] - i].color]}/${cards3[1][index_cards3[1] - i].number}.jpg`;
+//         user_open_game_cards.appendChild(game_img_front);
+//     }
+//     flip3cards(images, countCards)
+//     let close_cards = document.querySelector("#user_close_game_cards")
+//     let arrFlip = Array.from(close_cards.children)
+//     for (let index = 1; index < arrFlip.length; index++) {
+//         arrFlip[index].remove();
+//     }
+//     if (index_cards3[1] === cards3[1].length - 1) {
+//         back_img.hidden = true
+//         index_cards3[1] = 0;
+//         let temp = cards3[1][0];
+//         cards3[1].splice(0, 1);
+//         cards3[1].push(temp);
+//         is_move_first_card[1] = true;
+//     }
+// }
 
 function clickPlayMakers() {
     if (cardsIndex[1] === playMakers[1].length - 1 && back_img.hidden === true) {
@@ -279,13 +295,13 @@ function popCardFromFrontFive(i, cardIndex) {
         frontFive[i][cardIndex] = null
 }
 
-function usersFeedersClick() {
-    if (feeders[1].length > 0) {
-        feedFrontFive(1, frontFiveMissingIndexes.pop());
-    }
-    else {
-        // round win of user
-    } 
+function clickUsersFeeders() {
+    if (feeders[1].length > 0)
+        if (frontFiveMissingIndexes.length > 0)
+            feedFrontFive(1, frontFiveMissingIndexes.pop());
+    if (feeders[1].length === 0)
+        console.log("round win of user")
+        // round win of user  
 }
 
 function feedFrontFive(i, cardIndex) {
@@ -525,6 +541,7 @@ function get_board() {
     const back = document.createElement("div");
     back.id = "card-back1"
     back.className = "card-back";
+    back.setAttribute("onclick", "clickUsersFeeders()");
     back.appendChild(img_back);
 
     let num_of_close_13 = document.createElement("p");
